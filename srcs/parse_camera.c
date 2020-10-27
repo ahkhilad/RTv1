@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:10:58 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/24 11:01:44 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/27 14:41:21 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,15 +20,23 @@ int    ft_parse_camera(t_mx *v, char **token)
     int         len;
     
     len = ft_strsplit_len(token);
+    pos = (t_vec){0,0,0};
+    at = (t_vec){0,0,0};
+    vfov = 0.0f;
     if (len == 4 && token)
     {
-        if (token[1])
-            pos = string_to_vect(token[1]);
-        if (token[2])
-            at = string_to_vect(token[2]);
-        if (token[3])
-            vfov = ft_atof(token[3]);
-        v->cam = ft_camera_create(pos, at, (t_vec){0, 1, 0}, vfov);
+        if (ft_check_vectors(token[1]) && ft_check_vectors(token[2]))
+        {
+            if (token[1])
+                pos = string_to_vect(token[1]);
+            if (token[2])
+                at = string_to_vect(token[2]);
+            if (token[3])
+                vfov = ft_atof(token[3]);
+            v->cam = ft_camera_create(pos, at, (t_vec){0, 1, 0}, vfov);
+        }
+        else
+            return (0);
     }
     else
         return (0);

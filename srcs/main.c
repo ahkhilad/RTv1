@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:11 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/20 14:46:01 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/27 09:32:17 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -211,9 +211,6 @@ int 	ft_shade_object(t_hit *hit, t_light *lights, t_object *lst, t_ray *ray)
 {
 	t_light 	*light;
 	t_vec		color;
-	float		ambient_strenght;
-	t_vec		ambient;
-	t_vec		result;
 	t_vec		light_dir;
 	t_ray		shadow_ray;
 
@@ -236,8 +233,6 @@ int 	ft_shade_object(t_hit *hit, t_light *lights, t_object *lst, t_ray *ray)
 
 t_vec	ft_rotate_object(t_vec to_rot, t_vec rot, int invert)
 {
-	t_vec	result;
-
 	if (invert)
 	{
 		to_rot = z_rotation(to_rot, -rot.z);

@@ -6,7 +6,7 @@
 #    By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/03/30 13:44:46 by ahkhilad          #+#    #+#              #
-#    Updated: 2020/10/23 10:01:03 by ahkhilad         ###   ########.fr        #
+#    Updated: 2020/10/27 11:29:50 by ahkhilad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -25,7 +25,7 @@ SRC = ft_memcpy.c ft_striteri.c ft_memdel.c ft_strjoin.c ft_atoi.c \
 	  ft_strtrim.c ft_memalloc.c ft_strdel.c ft_tolower.c ft_memccpy.c \
 	  ft_strdup.c ft_toupper.c ft_memchr.c ft_strequ.c \
 	  ft_words_counter.c ft_memcmp.c ft_striter.c ft_atof.c ft_isnumber.c \
-	  ft_str_is_numeric.c ft_point.c
+	  ft_str_is_numeric.c ft_point.c ft_atod.c
 
 CC = gcc
 

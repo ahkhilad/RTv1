@@ -6,7 +6,7 @@
 #    By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/06 14:38:16 by ahkhilad          #+#    #+#              #
-#    Updated: 2020/10/24 09:52:17 by ahkhilad         ###   ########.fr        #
+#    Updated: 2020/10/27 09:38:33 by ahkhilad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -27,9 +27,7 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-MLXFLAGS = -lmlx -framework OpenGL -framework AppKit
-
-EXEC = gcc $(CFLAGS) 
+MLXFLAGS = -lmlx -framework OpenGL -framework AppKit 
 
 OBJ = $(SRCS:.c=.o)
 
@@ -37,7 +35,7 @@ all: $(NAME)
 
 $(OBJ): $(SRCS) $(INC)
 	@echo "\033[2;33m"
-	gcc -c $(SRCS) 
+	gcc $(CFLAGS) -c $(SRCS) 
 	mv *.o ./srcs/
 	@echo "\033[0m"
 
@@ -53,7 +51,7 @@ $(LINALG):
 
 $(NAME): $(OBJ) $(LFT) $(LINALG)
 	@echo "\033[2;33m"
-	$(EXEC) $^ -o $@ $(MLXFLAGS)
+	$(CC) $^ -o $@ $(MLXFLAGS)
 	@echo "\033[0m"
 	@echo "\033[32;3mAll Set !\n\033[0m"
 

@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:12:21 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/26 11:48:48 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/27 14:41:53 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@ void      ft_strsplit_print(char **tab)
 
     i = -1;
     while (tab[++i])
-        ft_putendl(tab[i]);
+        ft_putstr(tab[i]);
 }
 
 int     ft_camera_existance_check(char **tab)
@@ -67,6 +67,71 @@ int     ft_camera_existance_check(char **tab)
     return (0);
 }
 
+int     ft_check_vec_cor(char **tab)
+{
+    int     i;
+
+    i = -1;
+    while (tab[++i])
+    {
+        if (tab[i] && !ft_str_is_numeric(tab[i]))
+            return (0);
+    }
+    return (1);
+}
+
+int     ft_check_vectors(char *str)
+{
+    int     i;
+    char    **tab;
+
+    if (!(tab = ft_strsplit(str, ' ')))
+        return (0);
+    i = ft_strsplit_len(tab);
+    if (i != 3)
+        return (0);
+    if (!ft_check_vec_cor(tab))
+        return (0);
+    ft_strsplit_free(&tab);
+    return (1);
+}
+
+int     ft_check_semicolon(char *line)
+{
+    int     i;
+
+    if (line[0] == ';')
+        return (0);
+    i = -1;
+    while (line[++i])
+    {
+        if (line[i] && line[i] == ';')
+        {
+            if (!line[i + 1] || line[i + 1] != '\n')
+                return (0);
+        }
+    }
+    return (1);
+}
+
+int     ft_check_whitespaces(char *line)
+{
+    int     i;
+
+    if (line[0] == ' ' || line[0] == '\t')
+        return (0);
+    i = -1;
+    while (line[++i])
+    {
+        if (line[i] && line[i] == ' ')
+        {
+            if (!line[i + 1] || line[i + 1] == ' ' || line[i + 1] == '\n')
+                return (0);
+        }
+    }
+    return (1);
+}
+
 int     ft_check_empty_lines(char *line)
 {
     int     i;
@@ -82,6 +147,10 @@ int     ft_check_empty_lines(char *line)
                 return (0);
         }
     }
+    if (!ft_check_semicolon(line))
+        return (0);
+    if (!ft_check_whitespaces(line))
+        return (0);
     return (1);
 }
 
