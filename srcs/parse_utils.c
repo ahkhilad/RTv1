@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:12:21 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/27 14:41:53 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/28 12:57:05 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,6 +64,8 @@ int     ft_camera_existance_check(char **tab)
     }
     if (j == 1)
         return (1);
+    else if (j == 0)
+        ft_putstr("No camera was found in the file !\n");
     return (0);
 }
 
@@ -78,6 +80,39 @@ int     ft_check_vec_cor(char **tab)
             return (0);
     }
     return (1);
+}
+
+int     ft_check_positive_floats(char *str)
+{
+    double   to_check;
+
+    if (str && !ft_str_is_numeric(str))
+        return (0);
+    to_check = ft_atof(str);
+    if (to_check <= 0.0)
+        return (0);
+    return (1);   
+}
+
+int     ft_check_floats(char *str)
+{
+    if (str && !ft_str_is_numeric(str))
+        return (0);
+    return (1);
+}
+
+int     ft_check_camera_fov(char *str)
+{
+    double  fov;
+
+    fov = 0.0;
+    if (str && ft_check_floats(str))
+        {
+            fov = ft_atof(str);
+            if (fov <= 120.0 && fov >= 30.0)
+                return (1);
+        }
+    return (0);
 }
 
 int     ft_check_vectors(char *str)
@@ -125,7 +160,8 @@ int     ft_check_whitespaces(char *line)
     {
         if (line[i] && line[i] == ' ')
         {
-            if (!line[i + 1] || line[i + 1] == ' ' || line[i + 1] == '\n')
+            if (!line[i + 1] || line[i + 1] == ' '
+            || line[i + 1] == '\t' || line[i + 1] == '\n' )
                 return (0);
         }
     }
