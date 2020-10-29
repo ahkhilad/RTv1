@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:12:21 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/28 12:57:05 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/29 12:26:08 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -69,6 +69,30 @@ int     ft_camera_existance_check(char **tab)
     return (0);
 }
 
+int     ft_check_hex_color(char *str)
+{
+    int     i;
+
+    if (ft_strlen(str) != 8)
+        return (0);
+    i = 1;
+    if (str && str[0] == '0')
+    {
+        if (str && str[1] == 'x')
+            while (str[++i])
+            {
+                if ((str[i] < 65 || str[i] > 70) && (str[i] < 97 || str[i] > 102)
+                && (str[i] < 48 || str[i] > 57))
+                    return (0);
+            }
+        else
+            return (0);
+    }
+    else
+        return (0);
+    return (1);
+}
+
 int     ft_check_vec_cor(char **tab)
 {
     int     i;
@@ -113,6 +137,47 @@ int     ft_check_camera_fov(char *str)
                 return (1);
         }
     return (0);
+}
+
+int     ft_special_vec_check(char **tab)
+{
+    if (ft_strequ(tab[0], "1") && ft_strequ(tab[1], "0")
+    && ft_strequ(tab[2], "0"))
+        return (1);
+    if (ft_strequ(tab[0], "0") && ft_strequ(tab[1], "1")
+    && ft_strequ(tab[2], "0"))
+        return (1);
+    if (ft_strequ(tab[0], "0") && ft_strequ(tab[1], "0")
+    && ft_strequ(tab[2], "1"))
+        return (1);
+    if (ft_strequ(tab[0], "-1") && ft_strequ(tab[1], "0")
+    && ft_strequ(tab[2], "0"))
+        return (1);
+    if (ft_strequ(tab[0], "0") && ft_strequ(tab[1], "-1")
+    && ft_strequ(tab[2], "0"))
+        return (1);
+    if (ft_strequ(tab[0], "0") && ft_strequ(tab[1], "0")
+    && ft_strequ(tab[2], "-1"))
+        return (1);
+    return (0);
+}
+
+int     ft_check_directional_vec(char *str)
+{
+    int     i;
+    char    **tab;
+
+    if (!(tab = ft_strsplit(str, ' ')))
+        return (0);
+    i = ft_strsplit_len(tab);
+    if (i != 3)
+        return (0);
+    if (!ft_check_vec_cor(tab))
+        return (0);
+    if (!ft_special_vec_check(tab))
+        return (0);
+    ft_strsplit_free(&tab);
+    return (1);
 }
 
 int     ft_check_vectors(char *str)

@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 00:31:07 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/28 09:54:21 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/29 12:19:58 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -141,9 +141,11 @@ int						ft_strsplit_len(char **tab);
 void					ft_strsplit_print(char **tab);
 int						ft_split_check(char *line);
 int						ft_check_vectors(char *str);
+int						ft_check_directional_vec(char *str);
 int						ft_check_floats(char *str);
 int						ft_check_positive_floats(char *str);
 int						ft_check_camera_fov(char *str);
+int						ft_check_hex_color(char *str);
 int						ft_special_atoi_base(char *str);
 t_vec					vect_from_hexa(int rgb);
 t_vec					string_to_vect(char *str);

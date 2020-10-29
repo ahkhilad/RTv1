@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:11:31 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/28 12:47:19 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/10/29 12:19:51 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,8 @@ int    ft_parse_sphere(t_mx *v, char **token)
     if (len == 6 && token)
     {
         if (ft_check_vectors(token[1]) && ft_check_vectors(token[3])
-        && ft_check_vectors(token[4]) && ft_check_positive_floats(token[2]))
+        && ft_check_vectors(token[4]) && ft_check_positive_floats(token[2])
+        && ft_check_hex_color(token[5]))
         {
             ft_bzero(&object, sizeof(t_object));
             object.type = SPHERE;
@@ -53,8 +54,9 @@ int    ft_parse_plane(t_mx *v, char **token)
     len = ft_strsplit_len(token);
     if (len == 6 && token)
     {
-        if (ft_check_vectors(token[1]) && ft_check_vectors(token[2])
-        && ft_check_vectors(token[3]) && ft_check_vectors(token[4]))
+        if (ft_check_vectors(token[1]) && ft_check_directional_vec(token[2])
+        && ft_check_vectors(token[3]) && ft_check_vectors(token[4])
+        && ft_check_hex_color(token[5]))
         {
             ft_bzero(&object, sizeof(t_object));
             object.type = PLANE;
@@ -86,9 +88,9 @@ int    ft_parse_cone(t_mx *v, char **token)
     len = ft_strsplit_len(token);
     if (len == 7 && token)
     {
-        if (ft_check_vectors(token[1]) && ft_check_vectors(token[3])
+        if (ft_check_vectors(token[1]) && ft_check_directional_vec(token[3])
         && ft_check_vectors(token[4]) && ft_check_vectors(token[5])
-        && ft_check_floats(token[2]))
+        && ft_check_floats(token[2]) && ft_check_hex_color(token[6]))
         {
             ft_bzero(&object, sizeof(t_object));
             object.type = CONE;
@@ -122,9 +124,9 @@ int    ft_parse_cylinder(t_mx *v, char **token)
     len = ft_strsplit_len(token);
     if (len == 7 && token)
     {
-        if (ft_check_vectors(token[1]) && ft_check_vectors(token[3])
+        if (ft_check_vectors(token[1]) && ft_check_directional_vec(token[3])
         && ft_check_vectors(token[4]) && ft_check_vectors(token[5])
-        && ft_check_positive_floats(token[2]))
+        && ft_check_positive_floats(token[2]) && ft_check_hex_color(token[6]))
         {
             ft_bzero(&object, sizeof(t_object));
             object.type = CYLINDER;
@@ -158,7 +160,8 @@ int    ft_parse_light(t_mx *v, char **token)
     len = ft_strsplit_len(token);
     if (len == 4 && token)
     {
-        if (ft_check_vectors(token[1]) && ft_check_positive_floats(token[2]))
+        if (ft_check_vectors(token[1]) && ft_check_positive_floats(token[2])
+        && ft_check_hex_color(token[3]))
         {
             ft_bzero(&light, sizeof(t_light));
             if (token[1])
