@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:11 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/27 09:32:17 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/20 13:50:19 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -124,13 +124,82 @@ int		cone_intersect(t_object *cone, t_ray *ray, float *tmin)
 	return (ft_min_ray(t1, t2, tmin));
 }
 
+int		ellipsoid_intersect(t_object *ellipsoid, t_ray *ray, float *tmin)
+{
+	t_vec	x;
+	float	r;
+	float	a1;
+	float	a2;
+	float	a;
+	float	b;
+	float	c;
+	float	delta;
+	float	t;
+	float	t1;
+	float	t2;
+
+	t = INFINITY;
+	x = ft_vectorsub(ray->source, ellipsoid->pos);
+	// printf("%.2f\n", ellipsoid->distance);
+	// printf("%.2f\n", ellipsoid->radius1);
+	// printf("%.2f\n", ellipsoid->radius2);
+	// exit (0);
+	r = ellipsoid->radius1 + ellipsoid->radius2;
+	a1 = 2.0 * ellipsoid->distance * ft_dotproduct(ray->direction, ellipsoid->axis);
+	a2 = (r * r) + (2.0 * ellipsoid->distance * ft_dotproduct(x, ellipsoid->axis)) - ellipsoid->distance;
+	a = (4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, ray->direction)) - powf(a1, 2.0);
+	b = 2.0 * ((4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, x)) - (a1 * a2));
+	c = (4.0 * powf(r, 2.0) * ft_dotproduct(x, x)) - powf(a2, 2.0);
+	delta = (b * b) - (4.0 * a * c);
+	if (delta < 0)
+		return (0);
+	delta = sqrtf(delta);
+	t1 = (-b + delta) / (2 * a);
+	t2 = (-b - delta) / (2 * a);
+	return (ft_min_ray(t1, t2, tmin));
+}
+
+int		paraboloid_intersect(t_object *paraboloid, t_ray *ray, float *tmin)
+{
+	t_vec	x;
+	float	a;
+	float	b;
+	float	c;
+	float	delta;
+	float	t;
+	float	t1;
+	float	t2;
+
+	t = INFINITY;
+	x = ft_vectorsub(ray->source, paraboloid->pos);
+	// printf("%.2f\n", paraboloid->distance);
+	// exit (0);
+	a = ft_dotproduct(ray->direction, ray->direction) - powf(ft_dotproduct(ray->direction, paraboloid->axis), 2.0);
+	b = 2.0 * (ft_dotproduct(ray->direction, x) - ft_dotproduct(ray->direction, ft_vectormulti(paraboloid->axis, (ft_dotproduct(x, paraboloid->axis) + (2.0 * paraboloid->distance)))));
+	c = ft_dotproduct(x, x) - ft_dotproduct(x, ft_vectormulti(paraboloid->axis, (ft_dotproduct(x, paraboloid->axis) + (4.0 * paraboloid->distance))));
+	delta = (b * b) - (4.0 * a * c);
+	if (delta < 0)
+		return (0);
+	delta = sqrtf(delta);
+	t1 = (-b + delta) / (2 * a);
+	t2 = (-b - delta) / (2 * a);
+	return (ft_min_ray(t1, t2, tmin));
+}
+
 void	ft_compute_normals(t_hit *hit, t_ray *ray)
 {
 	//(void)ray;
 	t_vec	x;
+	t_vec	cmid;
+	t_vec	mr;
 	float	m;
+	// float	maxm;
 	float	k;
-	//float	a;
+	float	r;
+	float	a1;
+	float	a2;
+	float	a;
+	float	b;
 	
 	if (hit->object->type == SPHERE)
 		hit->n = ft_normalize(ft_vectorsub(hit->p, hit->object->pos));
@@ -144,11 +213,27 @@ void	ft_compute_normals(t_hit *hit, t_ray *ray)
 	}
 	else if (hit->object->type == CONE)
 	{
-		x = ft_vectorsub(ray->source, hit->object->pos);
+		x = ft_vectorsub(ray->source, hit->object->pos); 
 		m = ft_dotproduct(ray->direction, ft_vectormulti(hit->object->axis, hit->t)) + ft_dotproduct(x, hit->object->axis);
 		k = tanf(deg_to_rad(hit->object->angle) / 2.0);
-		//a = m * k * k;
 		hit->n = ft_normalize(ft_vectorsub(ft_vectorsub(hit->p, hit->object->pos), ft_vectormulti(hit->object->axis, ((1.0 + (k * k)) * m))));
+	}
+	else if (hit->object->type == ELLIPSOID)
+	{
+		x = ft_vectorsub(ray->source, hit->object->pos);
+		r = hit->object->radius1 + hit->object->radius2;
+		a1 = 2.0 * hit->object->distance * ft_dotproduct(ray->direction, hit->object->axis);
+		a2 = powf(r, 2.0) + (2.0 * hit->object->distance * ft_dotproduct(x, hit->object->axis)) - hit->object->distance;
+		a = (4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, ray->direction)) - powf(a1, 2.0);
+		b = 2.0 * ((4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, x)) - (a1 * a2));
+		cmid = ft_vectoradd(hit->object->pos, ft_vectormulti(hit->object->axis, (hit->object->distance / 2.0)));
+		mr = ft_vectorsub(hit->p, cmid);
+		hit->n = ft_normalize(ft_vectorsub(mr, ft_vectormulti(hit->object->axis, ((1 - powf(b, 2.0)) / powf(a, 2.0) * ft_dotproduct(mr, hit->object->axis)))));
+	}
+	else if (hit->object->type == PARABOLOID)
+	{
+		m = ft_dotproduct(ft_vectorsub(hit->p, hit->object->pos), hit->object->axis);
+		hit->n = ft_normalize(ft_vectorsub(ft_vectorsub(hit->p, hit->object->pos), ft_vectormulti(hit->object->axis, (m + hit->object->distance))));
 	}
 }
 
@@ -190,16 +275,15 @@ t_vec	ft_light_computing(t_light *light, t_vec light_dir, t_hit *hit, t_ray *ray
 	
 	// and this is the calculation of the shininess of the object (specular) using Jim Blinn shading way;
 
-	/*blinn_dir = ft_vectorsub(light_dir, ray->direction);
-	temp = sqrtf(ft_dotproduct(blinn_dir, blinn_dir));
-	if (temp != 0.0f)
-	{
-		blinn_dir = ft_vectormulti(blinn_dir, (1.0f / temp));
-		blinn_term = fmax(ft_dotproduct(blinn_dir, hit->n), 0.0f);
-		blinn_term = 1.0f * powf(blinn_term, 90.0f) * 1.0f;
-		color = ft_vectoradd(color, ft_vectormulti(hit->object->color, blinn_term));
-	}*/
-
+	// blinn_dir = ft_vectorsub(light_dir, ray->direction);
+	// temp = sqrtf(ft_dotproduct(blinn_dir, blinn_dir));
+	// if (temp != 0.0f)
+	// {
+	// 	blinn_dir = ft_vectormulti(blinn_dir, (1.0f / temp));
+	// 	blinn_term = fmax(ft_dotproduct(blinn_dir, hit->n), 0.0f);
+	// 	blinn_term = 1.0f * powf(blinn_term, 90.0f) * 1.0f;
+	// 	color = ft_vectoradd(color, ft_vectormulti(hit->object->color, blinn_term));
+	// }
 	//printf("Intensity : %.10f\n", light->intensity);
 	color.x = color.x * light->color.x * light->intensity;
 	color.y = color.y * light->color.y * light->intensity;
@@ -338,6 +422,26 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 					save = ray;
 				}
 		}
+		else if (p->type == ELLIPSOID)
+		{
+			if (ellipsoid_intersect(p, &ray, &t))
+				if (hit->t > t)
+				{
+					hit->t = t;
+					hit->object = p;
+					save = ray;
+				}
+		}
+		else if (p->type == PARABOLOID)
+		{
+			if (paraboloid_intersect(p, &ray, &t))
+				if (hit->t > t)
+				{
+					hit->t = t;
+					hit->object = p;
+					save = ray;
+				}
+		}
 		p = p->next;
 	}
 	if (hit->object == NULL)
@@ -383,6 +487,18 @@ int 	shadow_cast(t_object *lst, t_ray *ray, float *tmin)
 		else if (p->type == CONE)
 		{
 			if (cone_intersect(p, &ra, &t))
+				if (t < *tmin)
+					return (1);
+		}
+		else if (p->type == ELLIPSOID)
+		{
+			if (ellipsoid_intersect(p, &ra, &t))
+				if (t < *tmin)
+					return (1);
+		}
+		else if (p->type == PARABOLOID)
+		{
+			if (paraboloid_intersect(p, &ra, &t))
 				if (t < *tmin)
 					return (1);
 		}

@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:36 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/24 12:19:12 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/20 11:26:00 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,6 +31,12 @@ int    ft_token_handle(t_mx *v, char **token)
             return (0);
     if (token[0] && ft_strequ(token[0], "camera"))
         if (!ft_parse_camera(v, token))
+            return (0);
+    if (token[0] && ft_strequ(token[0], "ellipsoid"))
+        if (!ft_parse_ellipsoid(v, token))
+            return (0);
+    if (token[0] && ft_strequ(token[0], "paraboloid"))
+        if (!ft_parse_paraboloid(v, token))
             return (0);
     return (1);
 }

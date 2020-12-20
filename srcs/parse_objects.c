@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:11:31 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/29 12:19:51 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/20 11:43:50 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -134,6 +134,83 @@ int    ft_parse_cylinder(t_mx *v, char **token)
                 object.pos = string_to_vect(token[1]);
             if (token[2])
                 object.radius = ft_atof(token[2]);
+            if (token[3])
+                object.axis = string_to_vect(token[3]);
+            if (token[4])
+                object.rot = string_to_vect(token[4]);
+            if (token[5])
+                object.trans = string_to_vect(token[5]);
+            if (token[6])
+                object.color = vect_from_hexa(ft_special_atoi_base(token[6]));
+            ft_object_push(&v->objects, ft_object_new(object));
+        }
+        else
+            return (0);
+    }
+    else
+        return (0);
+    return (1);
+}
+
+int    ft_parse_ellipsoid(t_mx *v, char **token)
+{
+    t_object    object;
+    int         len;
+
+    len = ft_strsplit_len(token);
+    if (len == 9 && token)
+    {
+        if (ft_check_vectors(token[1]) && ft_check_positive_floats(token[2])
+        && ft_check_positive_floats(token[3]) && ft_check_positive_floats(token[4])
+        && ft_check_directional_vec(token[5]) && ft_check_vectors(token[6]) 
+        && ft_check_vectors(token[7]) && ft_check_hex_color(token[8]))
+        {
+            ft_bzero(&object, sizeof(t_object));
+            object.type = ELLIPSOID;
+            if (token[1])
+                object.pos = string_to_vect(token[1]);
+            if (token[2])
+                object.distance = ft_atof(token[2]);
+            if (token[3])
+                object.radius1 = ft_atof(token[3]);
+            if (token[4])
+                object.radius2 = ft_atof(token[4]);
+            if (token[5])
+                object.axis = string_to_vect(token[5]);
+            if (token[6])
+                object.rot = string_to_vect(token[6]);
+            if (token[7])
+                object.trans = string_to_vect(token[7]);
+            if (token[8])
+                object.color = vect_from_hexa(ft_special_atoi_base(token[8]));
+            ft_object_push(&v->objects, ft_object_new(object));
+        }
+        else
+            return (0);
+    }
+    else
+        return (0);
+    return (1);
+}
+
+int    ft_parse_paraboloid(t_mx *v, char **token)
+{
+    t_object    object;
+    int         len;
+
+    len = ft_strsplit_len(token);
+    if (len == 7 && token)
+    {
+        if (ft_check_vectors(token[1]) && ft_check_directional_vec(token[3])
+        && ft_check_vectors(token[4]) && ft_check_vectors(token[5])
+        && ft_check_floats(token[2]) && ft_check_hex_color(token[6]))
+        {
+            ft_bzero(&object, sizeof(t_object));
+            object.type = PARABOLOID;
+            if (token[1])
+                object.pos = string_to_vect(token[1]);
+            if (token[2])
+                object.distance = ft_atof(token[2]);
             if (token[3])
                 object.axis = string_to_vect(token[3]);
             if (token[4])

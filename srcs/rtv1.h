@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 00:31:07 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/29 12:19:58 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/20 11:43:25 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # define WIN_W 1280
 # define WIN_H 720
 
-# define ELEMENTS "camera", "light", "sphere", "plane", "cone", "cylinder"
+# define ELEMENTS "camera", "light", "sphere", "plane", "cone", "cylinder", "ellipsoid", "paraboloid"
 
 # include "mlx.h"
 # include <fcntl.h>
@@ -61,7 +61,9 @@ typedef enum			e_type
 	SPHERE = 10,
 	PLANE,
 	CONE,
-	CYLINDER
+	CYLINDER,
+	ELLIPSOID,
+	PARABOLOID
 }						t_type;
 
 typedef struct			s_object
@@ -72,6 +74,9 @@ typedef struct			s_object
 	t_vec				rot;
 	t_vec				color;
 	float				radius;
+	float				radius1;
+	float				radius2;
+	float				distance;
 	float				angle;
 	t_vec				normal;
 	t_vec				axis;
@@ -157,6 +162,8 @@ int						ft_parse_sphere(t_mx *v, char **token);
 int						ft_parse_plane(t_mx *v, char **token);
 int						ft_parse_cone(t_mx *v, char **token);
 int						ft_parse_cylinder(t_mx *v, char **token);
+int						ft_parse_ellipsoid(t_mx *v, char **token);
+int						ft_parse_paraboloid(t_mx *v, char **token);
 int						ft_parse_light(t_mx *v, char **token);
 int						ft_parse_camera(t_mx *v, char **token);
 t_cam					ft_camera_create(t_vec pos, t_vec at, t_vec vup, \
