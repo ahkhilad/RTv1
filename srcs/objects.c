@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:10:13 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/19 09:56:54 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/23 10:59:49 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,6 +20,9 @@ t_object        *ft_object_new(t_object o)
     {
         new->type = o.type;
         new->pos = o.pos;
+        new->a = o.a;
+        new->b = o.b;
+        new->c = o.c;
         new->trans = o.trans;
         new->rot = o.rot;
         new->radius = o.radius;

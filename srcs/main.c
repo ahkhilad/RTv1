@@ -6,11 +6,20 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:11 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/20 13:50:19 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2020/12/23 11:16:02 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "rtv1.h"
+
+int ft_is_zero(float value){
+	return (value < 0.5f  && value > -0.001f);
+}
+
+void ft_print_vect(t_vec v){
+
+	printf("vec : x : %.2f\t y : %.2f\t z : %.2f\n", v.x, v.y, v.z);
+}
 
 static int		ft_min_ray(float t1, float t2, float *t)
 {
@@ -33,9 +42,7 @@ int sphere_intersect(t_object *sphere, t_ray *ray, float *tmin)
 	t_vec x;
 	float a, b, c, delta;
 	float t1, t2;
-	float t;
-	
-	t = INFINITY;
+
 	x = ft_vectorsub(ray->source, sphere->pos);
 	a = ft_dotproduct(ray->direction, ray->direction);
 	b = 2.0 * ft_dotproduct(ray->direction, x);
@@ -54,10 +61,8 @@ int		plane_intersect(t_object *plane, t_ray *ray, float *tmin)
 	t_vec	x;
 	float	a;
 	float	b;
-	float	t;
 	float	t1;
 
-	t = INFINITY;
 	x = ft_vectorsub(ray->source, plane->pos);
 	a = -1.0 * ft_dotproduct(x, plane->normal);
 	b = ft_dotproduct(ray->direction, plane->normal);
@@ -79,11 +84,9 @@ int		cylinder_intersect(t_object *cylinder, t_ray *ray, float *tmin)
 	float	b;
 	float	c;
 	float	delta;
-	float	t;
 	float	t1;
 	float	t2;
 
-	t = INFINITY;
 	x = ft_vectorsub(ray->source, cylinder->pos);
 	a = ft_dotproduct(ray->direction, ray->direction) - powf(ft_dotproduct(ray->direction, cylinder->axis), 2.0);
 	b = 2.0 * (ft_dotproduct(ray->direction, x) - (ft_dotproduct(ray->direction, cylinder->axis) * ft_dotproduct(x, cylinder->axis)));
@@ -134,22 +137,21 @@ int		ellipsoid_intersect(t_object *ellipsoid, t_ray *ray, float *tmin)
 	float	b;
 	float	c;
 	float	delta;
-	float	t;
 	float	t1;
 	float	t2;
 
-	t = INFINITY;
 	x = ft_vectorsub(ray->source, ellipsoid->pos);
 	// printf("%.2f\n", ellipsoid->distance);
 	// printf("%.2f\n", ellipsoid->radius1);
 	// printf("%.2f\n", ellipsoid->radius2);
 	// exit (0);
 	r = ellipsoid->radius1 + ellipsoid->radius2;
+	// printf("k = %.2f\n", ellipsoid->distance);
 	a1 = 2.0 * ellipsoid->distance * ft_dotproduct(ray->direction, ellipsoid->axis);
 	a2 = (r * r) + (2.0 * ellipsoid->distance * ft_dotproduct(x, ellipsoid->axis)) - ellipsoid->distance;
-	a = (4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, ray->direction)) - powf(a1, 2.0);
-	b = 2.0 * ((4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, x)) - (a1 * a2));
-	c = (4.0 * powf(r, 2.0) * ft_dotproduct(x, x)) - powf(a2, 2.0);
+	a = (4.0 * r * r  * ft_dotproduct(ray->direction, ray->direction)) - a1 * a1;
+	b = 2.0 * (4.0 * r * r * ft_dotproduct(ray->direction, x)) - (a1 * a2);
+	c = (4.0 * r * r * ft_dotproduct(x, x)) - a2 * a2;
 	delta = (b * b) - (4.0 * a * c);
 	if (delta < 0)
 		return (0);
@@ -186,20 +188,63 @@ int		paraboloid_intersect(t_object *paraboloid, t_ray *ray, float *tmin)
 	return (ft_min_ray(t1, t2, tmin));
 }
 
+int		triangle_intersect(t_object *triangle, t_ray *ray, float *tmin)
+{
+	t_vec	ca;
+	t_vec	ba;
+	t_vec	bc;
+	t_vec	ab;
+	t_vec	normal;
+	t_vec	q;
+	t_vec	qa;
+	t_vec	qb;
+	t_vec	qc;
+	float	distance;
+	float	dist2plane;
+	float	a;
+	float	b;
+	float	t;
+	float	t1;
+	float	t2;
+
+	ca = ft_vectorsub(triangle->c, triangle->a);
+	ba = ft_vectorsub(triangle->b, triangle->a);
+	normal = ft_normalize(ft_crossproduct(ca, ba));
+	distance = ft_dotproduct(normal, triangle->a);
+	a = ft_dotproduct(ray->direction, normal);
+	b = ft_dotproduct(normal, ft_vectoradd(ray->source, ft_negative(ft_vectormulti(normal, distance))));
+	dist2plane = (-1 * b) / a;
+	// q.x = ray->direction.x * dist2plane + ray->source.x;
+	// q.y = ray->direction.y * dist2plane + ray->source.y;
+	// q.z = ray->direction.z * dist2plane + ray->source.z;
+	q = ft_vectoradd(ray->source, ft_vectormulti(ray->direction, dist2plane));
+	ca = ft_vectorsub(triangle->c, triangle->a);
+	qa = ft_vectorsub(q, triangle->a);
+	t = ft_dotproduct(ft_crossproduct(ca, qa), normal);
+	bc = ft_vectorsub(triangle->b, triangle->c);
+	qc = ft_vectorsub(q, triangle->c);
+	t1 = ft_dotproduct(ft_crossproduct(bc, qc), normal);
+	ab = ft_vectorsub(triangle->a, triangle->b);
+	qb = ft_vectorsub(q, triangle->b);
+	t2 = ft_dotproduct(ft_crossproduct(ab, qb), normal);
+	if (t >= 0.0 && t1 >= 0.0 && t2 >= 0.0)
+	{
+		*tmin = dist2plane;
+		return (dist2plane);
+	}
+	return (0);
+}
+
 void	ft_compute_normals(t_hit *hit, t_ray *ray)
 {
-	//(void)ray;
 	t_vec	x;
 	t_vec	cmid;
 	t_vec	mr;
+	t_vec	ac;
+	t_vec	bc;
 	float	m;
 	// float	maxm;
 	float	k;
-	float	r;
-	float	a1;
-	float	a2;
-	float	a;
-	float	b;
 	
 	if (hit->object->type == SPHERE)
 		hit->n = ft_normalize(ft_vectorsub(hit->p, hit->object->pos));
@@ -220,20 +265,21 @@ void	ft_compute_normals(t_hit *hit, t_ray *ray)
 	}
 	else if (hit->object->type == ELLIPSOID)
 	{
-		x = ft_vectorsub(ray->source, hit->object->pos);
-		r = hit->object->radius1 + hit->object->radius2;
-		a1 = 2.0 * hit->object->distance * ft_dotproduct(ray->direction, hit->object->axis);
-		a2 = powf(r, 2.0) + (2.0 * hit->object->distance * ft_dotproduct(x, hit->object->axis)) - hit->object->distance;
-		a = (4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, ray->direction)) - powf(a1, 2.0);
-		b = 2.0 * ((4.0 * powf(r, 2.0) * ft_dotproduct(ray->direction, x)) - (a1 * a2));
 		cmid = ft_vectoradd(hit->object->pos, ft_vectormulti(hit->object->axis, (hit->object->distance / 2.0)));
 		mr = ft_vectorsub(hit->p, cmid);
-		hit->n = ft_normalize(ft_vectorsub(mr, ft_vectormulti(hit->object->axis, ((1 - powf(b, 2.0)) / powf(a, 2.0) * ft_dotproduct(mr, hit->object->axis)))));
+		hit->n = ft_normalize(ft_vectorsub(mr, ft_vectormulti(hit->object->axis, ((1.0f - powf(hit->object->radius2, 2.0) / powf(hit->object->radius1, 2.0)) * ft_dotproduct(mr, hit->object->axis)))));
+	
 	}
 	else if (hit->object->type == PARABOLOID)
 	{
 		m = ft_dotproduct(ft_vectorsub(hit->p, hit->object->pos), hit->object->axis);
 		hit->n = ft_normalize(ft_vectorsub(ft_vectorsub(hit->p, hit->object->pos), ft_vectormulti(hit->object->axis, (m + hit->object->distance))));
+	}
+	else if (hit->object->type == TRIANGLE)
+	{
+		ac = ft_vectorsub(hit->object->a, hit->object->c);
+		bc = ft_vectorsub(hit->object->b, hit->object->c);
+		hit->n = ft_normalize(ft_crossproduct(ac, bc));
 	}
 }
 
@@ -296,18 +342,32 @@ int 	ft_shade_object(t_hit *hit, t_light *lights, t_object *lst, t_ray *ray)
 	t_light 	*light;
 	t_vec		color;
 	t_vec		light_dir;
+	t_vec       dist;
 	t_ray		shadow_ray;
 
 	float t;
 
 	color = (t_vec){0.0f, 0.0f, 0.0f};
-	shadow_ray.source = hit->p;
+	shadow_ray.source = hit->p;//ft_vectoradd(hit->p, (t_vec){0.5 * hit->n.x, 0.5 * hit->n.y, 0.5 * hit->n.z});
 	light = lights;
 	while (light)
 	{
-		light_dir = ft_normalize(ft_vectorsub(light->pos, hit->p));
-		shadow_ray.direction = light_dir;
+		dist = ft_vectorsub(light->pos, hit->p);
+		light_dir = ft_normalize(dist);
+		// if (ft_dotproduct(hit->n, dist)<=0.0f){
+		// 	ft_putendl("Yeah");
+		// 	light = light->next;
+		// 	continue;
+		// 	break;
+		// }
+		shadow_ray.direction = light_dir;//(t_vec){-light_dir.x, -light_dir.y, -light_dir.z};
 		t = ft_magnitude(ft_vectorsub(light->pos, hit->p));
+		// if (t <= 0.0f){
+		// 	ft_putendl("Yeoh");
+		// 	light = light->next;
+		// 	continue;
+		// 	break;
+		// }
 		if (!shadow_cast(lst, &shadow_ray, &t))
 			color = ft_vectoradd(color, ft_light_computing(light, light_dir, hit, ray));
 		light = light->next;
@@ -382,6 +442,7 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 	while (p)
 	{
 		ray = ft_transform_ray(p, raw, 1);
+		//ray = *raw;
 		if (p->type == SPHERE)
 		{
 			if (sphere_intersect(p, &ray, &t))
@@ -442,6 +503,16 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 					save = ray;
 				}
 		}
+		else if (p->type == TRIANGLE)
+		{
+			if (triangle_intersect(p, &ray, &t))
+				if (hit->t > t)
+				{
+					hit->t = t;
+					hit->object = p;
+					save = ray;
+				}
+		}
 		p = p->next;
 	}
 	if (hit->object == NULL)
@@ -466,6 +537,7 @@ int 	shadow_cast(t_object *lst, t_ray *ray, float *tmin)
 	while (p)
 	{
 		ra = ft_transform_ray(p, ray, 1);
+		//ra = *ray;
 		if (p->type == SPHERE)
 		{
 			if (sphere_intersect(p, &ra, &t))
@@ -493,12 +565,20 @@ int 	shadow_cast(t_object *lst, t_ray *ray, float *tmin)
 		else if (p->type == ELLIPSOID)
 		{
 			if (ellipsoid_intersect(p, &ra, &t))
+			{
 				if (t < *tmin)
 					return (1);
+			}		
 		}
 		else if (p->type == PARABOLOID)
 		{
 			if (paraboloid_intersect(p, &ra, &t))
+				if (t < *tmin)
+					return (1);
+		}
+		else if (p->type == TRIANGLE)
+		{
+			if (triangle_intersect(p, &ra, &t))
 				if (t < *tmin)
 					return (1);
 		}
