@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:08:53 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/10/14 18:09:05 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/08 19:13:34 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ t_cam     ft_camera_create(t_vec pos, t_vec at, t_vec vup, float vfov)
     float   half_height;
     float   half_width;
 
-    pos.z += 0.01; //
+    //pos.z += 0.01; //
     cam.pos = pos;
     cam.fov = vfov; //vertical field of view of camera//
     theta = vfov * M_PI / 180.0; // theta is the angle of vfov in radien//
@@ -45,11 +45,13 @@ t_ray       camera_ray(t_cam *cam, int x, int y)
 	float s;
     float t;
 
-	s = (float)x / (WIN_W);	
-	t = (float)y / (WIN_H);
+	s = (float)(x + 0.5) / (WIN_W);	
+	t = (float)(y + 0.5) / (WIN_H);
 	tmp = ft_vectoradd(ft_vectormulti(cam->horizontal, s),  ft_vectormulti(cam->vertical, t));
 	tmp = ft_vectoradd(cam->lower_left_corner, tmp);
 	ray.source = cam->pos;
 	ray.direction = ft_normalize(ft_vectorsub(tmp, cam->pos));
+   // printf("source : x : %.2f\t y : %.2f \t z : %.2f\n", ray.source.x, ray.source.y, ray.source.z);
+    //printf("direction : x : %.2f\t y : %.2f \t z : %.2f\n", ray.direction.x, ray.direction.y, ray.direction.z);
 	return (ray);
 }

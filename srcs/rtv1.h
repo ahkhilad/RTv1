@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 00:31:07 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/23 09:56:22 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/09 18:31:22 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,6 +77,7 @@ typedef struct			s_object
 	t_vec				a;
 	t_vec				b;
 	t_vec				c;
+	float               height;//Caped cylinder cone
 	float				radius;
 	float				radius1;
 	float				radius2;
@@ -140,10 +141,10 @@ void					ft_light_clear(t_light **lst);
 
 /* void        ft_object_push_front(t_object **lst, t_object *new){
 
-    if (lst == NULL || new == NULL)
-    return;
-    new->next = *lst;
-    *lst = new;
+	if (lst == NULL || new == NULL)
+	return;
+	new->next = *lst;
+	*lst = new;
 }*/
 void					ft_strsplit_free(char ***tab);
 int						ft_strsplit_len(char **tab);
@@ -155,13 +156,18 @@ int						ft_check_floats(char *str);
 int						ft_check_positive_floats(char *str);
 int						ft_check_camera_fov(char *str);
 int						ft_check_hex_color(char *str);
+
 int						ft_special_atoi_base(char *str);
 t_vec					vect_from_hexa(int rgb);
-t_vec					string_to_vect(char *str);
+t_vec					string_to_vect(char *str)
+;
 float					deg_to_rad(float angle);
 t_vec					x_rotation(t_vec v, float theta);
 t_vec					y_rotation(t_vec v, float theta);
 t_vec					z_rotation(t_vec v, float theta);
+t_vec					ft_translate_object(t_vec to_trans, t_vec trans, int invert);
+t_vec					ft_rotate_object(t_vec to_rot, t_vec rot, int invert);
+
 int						ft_parse_sphere(t_mx *v, char **token);
 int						ft_parse_plane(t_mx *v, char **token);
 int						ft_parse_cone(t_mx *v, char **token);
