@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:36 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/23 09:55:03 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/16 19:18:23 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,6 +40,18 @@ int    ft_token_handle(t_mx *v, char **token)
             return (0);
     if (token[0] && ft_strequ(token[0], "triangle"))
         if (!ft_parse_triangle(v, token))
+            return (0);
+    // if (token[0] && ft_strequ(token[0], "cube"))
+    //     if (!ft_parse_cube(v, token))
+    //         return (0);
+    if (token[0] && ft_strequ(token[0], "box"))
+        if (!ft_parse_box(v, token))
+            return (0);
+    // if (token[0] && ft_strequ(token[0], "ltd_plane"))
+    //     if (!ft_parse_ltd_plane(v, token))
+    //         return (0);
+    if (token[0] && ft_strequ(token[0], "parallelogram"))
+        if (!ft_parse_parallelogram(v, token))
             return (0);
     return (1);
 }

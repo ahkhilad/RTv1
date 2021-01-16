@@ -6,11 +6,11 @@
 #    By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/06 14:38:16 by ahkhilad          #+#    #+#              #
-#    Updated: 2020/10/27 09:38:33 by ahkhilad         ###   ########.fr        #
+#    Updated: 2021/01/15 16:18:53 by ahkhilad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = RTv1
+NAME = RT
 
 LFT = libft/libft.a
 

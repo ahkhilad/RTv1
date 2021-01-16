@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 00:31:07 by ahkhilad          #+#    #+#             */
-/*   Updated: 2021/01/09 18:31:22 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/16 19:17:38 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,7 +18,7 @@
 # define WIN_W 1280
 # define WIN_H 720
 
-# define ELEMENTS "camera", "light", "sphere", "plane", "cone", "cylinder", "ellipsoid", "paraboloid", "triangle"
+# define ELEMENTS "camera", "light", "sphere", "plane", "cone", "cylinder", "ellipsoid", "paraboloid", "triangle", "box", "parallelogram"
 
 # include "mlx.h"
 # include <fcntl.h>
@@ -64,7 +64,11 @@ typedef enum			e_type
 	CYLINDER,
 	ELLIPSOID,
 	PARABOLOID,
-	TRIANGLE
+	TRIANGLE,
+	BOX,
+	PARALLELOGRAM
+	// LTD_PLANE
+	// CUBE
 }						t_type;
 
 typedef struct			s_object
@@ -77,6 +81,10 @@ typedef struct			s_object
 	t_vec				a;
 	t_vec				b;
 	t_vec				c;
+	t_vec				d;
+	// t_vec				corner1;
+	// t_vec				corner2;
+	t_vec				bounds[2];
 	float               height;//Caped cylinder cone
 	float				radius;
 	float				radius1;
@@ -175,6 +183,11 @@ int						ft_parse_cylinder(t_mx *v, char **token);
 int						ft_parse_ellipsoid(t_mx *v, char **token);
 int						ft_parse_paraboloid(t_mx *v, char **token);
 int						ft_parse_triangle(t_mx *v, char **token);
+// int						ft_parse_cube(t_mx *v, char **token);
+int						ft_parse_box(t_mx *v, char **token);
+// int						ft_parse_ltd_plane(t_mx *v, char **token);
+int						ft_parse_parallelogram(t_mx *v, char **token);
+
 int						ft_parse_light(t_mx *v, char **token);
 int						ft_parse_camera(t_mx *v, char **token);
 t_cam					ft_camera_create(t_vec pos, t_vec at, t_vec vup, \

@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:10:13 by ahkhilad          #+#    #+#             */
-/*   Updated: 2021/01/08 16:36:02 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/16 19:05:00 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,11 @@ t_object        *ft_object_new(t_object o)
         new->a = o.a;
         new->b = o.b;
         new->c = o.c;
+        new->d = o.d;
+        // new->corner1 = o.corner1;
+        // new->corner2 = o.corner2;
+        new->bounds[0] = o.bounds[0];
+        new->bounds[1] = o.bounds[1];
         new->height = o.height;
         new->trans = o.trans;
         new->rot = o.rot;

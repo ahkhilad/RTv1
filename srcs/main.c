@@ -6,7 +6,7 @@
 /*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:11 by ahkhilad          #+#    #+#             */
-/*   Updated: 2021/01/09 19:20:04 by ahkhilad         ###   ########.fr       */
+/*   Updated: 2021/01/16 19:41:52 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -88,7 +88,7 @@ static int	ft_cylindre_cap(t_ray *ray, float *t, t_vec pos, t_vec n)
 		return (0);
 	dist = ft_vectorsub(pos, ray->source);
 	t1 = (ft_dotproduct(dist, n)) / ddn;
-	//if (t1 < *t && t1 > 1e-2)
+	// if (t1 < *t && t1 > 0) // more stuff needs to be re_do
 	if (t1 >= 0.0)
 	{
 		*t = t1;
@@ -168,6 +168,115 @@ int		cylinder_intersect(t_object *cylinder, t_ray *ray, float *tmin)
 	return (0);
 }
 
+float			ft_get_cone_limits(float t, t_ray *r, t_vec va, t_vec v)
+{
+	t_vec	q;
+	float	m1;
+	float	m2;
+
+	if (t < 0)
+		return (INFINITY);
+	q = ft_vectoradd(r->source, ft_vectormulti(r->direction, t));
+	m1 = ft_dotproduct(va, q);
+	m2 = ft_dotproduct(va, ft_vectorsub(q, v));
+	if (m1 < 0.0 && m2 > 0)
+		return (t);
+	return (INFINITY);
+}
+
+typedef struct	s_delta
+{
+	float	a;
+	float	b;
+	float	c;
+	float	delta;
+}				t_delta;
+
+typedef struct	s_aux_cone
+{
+	t_delta	d;
+	t_vec	pa;
+	t_vec	va;
+	t_vec	x;
+	t_vec	a;
+	t_vec	b;
+	float	anglesin;
+	float	t1;
+	float	t2;
+	float	m;
+	float	anglecos;
+}				t_aux_cone;
+
+typedef struct	s_aux_parallelogram
+{
+	t_vec	e01;
+	t_vec	e03;
+	t_vec	e23;
+	t_vec	e21;
+	t_vec	p;
+	t_vec	p2;
+	t_vec	t;
+	t_vec	t2;
+	t_vec	q;
+	t_vec	q2;
+	t_vec	n;
+	float	det;
+	float	det2;
+	float	invdet;
+	float	invdet2;
+	float	t1;
+	float	a;
+	float	b;
+	float	a2;
+	float	b2;
+}				t_aux_parallelogram;
+
+static void		ft_aux_cone_init(t_aux_cone *a, t_object *c, t_ray *r)
+{
+	a->anglecos = pow(cos(c->angle), 2.0);
+	a->anglesin = pow(sin(c->angle), 2.0);
+	a->pa = (t_vec){0.0, 0.0, 0.0};
+	a->va = ft_normalize(ft_vectorsub(a->pa, c->axis));
+	a->x = ft_vectorsub(r->source, a->pa);
+	a->a = ft_vectorsub(r->direction, ft_vectormulti(a->va, ft_dotproduct(r->direction, a->va)));
+	a->b = ft_vectorsub(a->x, ft_vectormulti(a->va, ft_dotproduct(a->x, a->va)));
+	a->d.a = a->anglecos * ft_dotproduct(a->a, a->a) -
+		a->anglesin * ft_dotproduct(r->direction, a->va) * ft_dotproduct(r->direction, a->va);
+	a->d.b = 2.0 * a->anglecos * ft_dotproduct(a->a, a->b) -
+		2.0 * a->anglesin * ft_dotproduct(r->direction, a->va) * ft_dotproduct(a->x,
+				a->va);
+	a->d.c = a->anglecos * ft_dotproduct(a->b, a->b) -
+		a->anglesin * ft_dotproduct(a->x, a->va) * ft_dotproduct(a->x, a->va);
+	a->d.delta = a->d.b * a->d.b - 4.0 * a->d.a * a->d.c;
+}
+
+int				cone_intersect(t_object *c, t_ray *r, float *t)
+{
+	t_aux_cone	a;
+
+	ft_aux_cone_init(&a, c, r);
+	if (a.d.delta < 0.00000001)
+		return (0);
+	a.d.delta = sqrt(a.d.delta);
+	if (c->height <= 0)
+	{
+		return (ft_min_ray((-a.d.b + a.d.delta) / (2.0 * a.d.a),
+			(-a.d.b - a.d.delta) / (2.0 * a.d.a), t));
+	}
+	a.t1 = ft_get_cone_limits((-a.d.b + a.d.delta) / (2.0 * a.d.a),
+			r, a.va, c->axis);
+	a.t2 = ft_get_cone_limits((-a.d.b - a.d.delta) / (2.0 * a.d.a),
+			r, a.va, c->axis);
+	if (!ft_min_ray(a.t1, a.t2, t))
+		return (0);
+	a.m = ft_dotproduct(r->direction, c->axis) * (*t);
+	a.m += ft_dotproduct(r->source, c->axis);
+	if (a.m > c->height / 2.0 - 5.0e-1)
+		return (2);
+	return (1);
+}
+
+/*
 int		cone_intersect(t_object *cone, t_ray *ray, float *tmin)
 {
 	t_vec	x;
@@ -176,6 +285,8 @@ int		cone_intersect(t_object *cone, t_ray *ray, float *tmin)
 	float	b;
 	float	c;
 	float	delta;
+	float	m0;
+	float	m1;
 	float	t1;
 	float	t2;
 
@@ -192,7 +303,8 @@ int		cone_intersect(t_object *cone, t_ray *ray, float *tmin)
 	t1 = (-b + delta) / (2 * a);
 	t2 = (-b - delta) / (2 * a);
 	return (ft_min_ray(t1, t2, tmin));
-}
+	
+}*/
 
 int		ellipsoid_intersect(t_object *ellipsoid, t_ray *ray, float *tmin)
 {
@@ -299,6 +411,121 @@ int		triangle_intersect(t_object *triangle, t_ray *ray, float *tmin)
 	return (0);
 }
 
+// int		ltd_pln_intersect(t_object *ltd_pln, t_ray *ray, float *tmin)
+// {
+// 	t_object	tr1;
+// 	t_object	tr2;
+// 	t_vec		a;
+// 	t_vec		b;
+// 	t_vec		c;
+// 	int			ret1;
+// 	int			ret2;
+// 	// t_vec		d;
+
+// 	// d = ft_vector(ltd_pln->corner2.x, ltd_pln->corner1.y, ltd_pln->corner1.z);
+// 	a = ft_vector(ltd_pln->corner2.x, ltd_pln->corner2.y, ltd_pln->corner1.z);
+// 	b = ft_vector(ltd_pln->corner1.x, ltd_pln->corner2.y, ltd_pln->corner1.z);
+// 	c = ft_vector(ltd_pln->corner1.x, ltd_pln->corner2.y, ltd_pln->corner2.z);
+// 	tr1.a = a;
+// 	tr1.b = b;
+// 	tr1.c = c;
+// 	tr1.color = ltd_pln->color;
+// 	tr1.rot = ltd_pln->rot;
+// 	tr1.trans = ltd_pln->trans;
+// 	tr2.a = c;
+// 	tr2.b = ltd_pln->corner2;
+// 	tr2.c = a;
+// 	tr2.color = ltd_pln->color;
+// 	tr2.rot = ltd_pln->rot;
+// 	tr2.trans = ltd_pln->trans;
+// 	ret1 = triangle_intersect(&tr1, ray, tmin);
+// 	ret2 = triangle_intersect(&tr2, ray, tmin);
+// 	return (1);
+// }
+
+int		box_intersect(t_object *box, t_ray *ray, float *tmin)
+{
+	t_vec	t[3];
+	int		sign[3];
+	t_vec	bounds[2];
+
+	bounds[0] = box->bounds[0];
+	bounds[1] = box->bounds[1];
+	t[2] = (t_vec){1.0 / ray->direction.x, 1.0 / ray->direction.y, 1.0 / ray->direction.z};
+	sign[0] = t[2].x < 0.00001;
+	sign[1] = t[2].y < 0.00001;
+	sign[2] = t[2].z < 0.00001;
+	t[0].x = (bounds[sign[0]].x - ray->source.x) * t[2].x;
+	t[1].x = (bounds[1 - sign[0]].x - ray->source.x) * t[2].x;
+	t[0].y = (bounds[sign[1]].y - ray->source.y) * t[2].y;
+	t[1].y = (bounds[1 - sign[1]].y - ray->source.y) * t[2].y;
+	if ((t[0].x > t[1].y) || (t[0].y > t[1].x))
+		return (0);
+	t[0].x = (t[0].y > t[0].x) ? t[0].y : t[0].x;
+	t[1].x = (t[1].y < t[1].x) ? t[1].y : t[1].x;
+	t[0].z = (bounds[sign[2]].z - ray->source.z) * t[2].z;
+	t[1].z = (bounds[1 - sign[2]].z - ray->source.z) * t[2].z;
+	if ((t[0].x > t[1].z) || (t[0].z > t[1].x))
+		return (0);
+	t[0].x = (t[0].z > t[0].x) ? t[0].z : t[0].x;
+	t[1].x = (t[1].z < t[1].x) ? t[1].z : t[1].x;
+	return (ft_min_ray(t[0].x, t[1].x, tmin));
+}
+
+static int	ft_aux_parallelogram(t_aux_parallelogram *a, t_object *para, t_ray *ray)
+{
+	if (a->a < 1.0e-6)
+		return (0);
+	a->q = ft_crossproduct(a->t, a->e01);
+	a->b = ft_dotproduct(ray->direction, a->q) * a->invdet;
+	if (a->b < 1.0e-6)
+		return (0);
+	if ((a->a + a->b) > 1.0001f)
+	{
+		a->e23 = ft_vectorsub(para->d, para->c);
+		a->e21 = ft_vectorsub(para->b, para->c);
+		a->p2 = ft_crossproduct(ray->direction, a->e21);
+		a->det2 = ft_dotproduct(a->e23, a->p2);
+		if (fabs(a->det2) < 1.0e-6)
+			return (0);
+		a->invdet2 = 1.0 / a->det2;
+		a->t2 = ft_vectorsub(ray->source, para->c);
+		a->a2 = ft_dotproduct(a->t2, a->p2) * a->invdet2;
+		if (a->a2 < 1.0e-6)
+			return (0);
+		a->q2 = ft_crossproduct(a->t2, a->e23);
+		a->b2 = ft_dotproduct(ray->direction, a->q2) * a->invdet2;
+		if (a->b2 < 1.0e-6)
+			return (0);
+	}
+	return (1);
+}
+
+int			parallelogram_intersect(t_object *para, t_ray *ray,float *tmin)
+{
+	t_aux_parallelogram	a;
+
+	a.e01 = ft_vectorsub(para->b, para->a);
+	a.e03 = ft_vectorsub(para->d, para->a);
+	a.p = ft_crossproduct(ray->direction, a.e03);
+	a.det = ft_dotproduct(a.e01, a.p);
+	if (fabs(a.det) >= 1.0e-6)
+	{
+		a.invdet = 1.0 / a.det;
+		a.t = ft_vectorsub(ray->source, para->a);
+		a.a = ft_dotproduct(a.t, a.p) * a.invdet;
+		if (!ft_aux_parallelogram(&a, para, ray))
+			return (0);
+		a.t1 = ft_dotproduct(a.e03, a.q) * a.invdet;
+		if (a.t1 < *tmin && a.t1 > 1.0e-6)
+		{
+			*tmin = a.t1;
+			return (1);
+		}
+	}
+	return (0);
+}
+
 void	ft_cylinder_normal(t_hit *hit, t_ray *ray, int ret)
 {
 	float	m;
@@ -316,6 +543,37 @@ void	ft_cylinder_normal(t_hit *hit, t_ray *ray, int ret)
 	}
 }
 
+t_vec	ft_normal_cone(t_object *cone, t_vec p)
+{
+	p = ft_vectormulti( p, 1.0 / cone->angle);
+	return (ft_vector(p.x, 0.001, p.z));
+}
+
+t_vec	ft_box_normal(t_object *box, t_vec h)
+{
+	t_vec	c;
+	t_vec	d;
+	t_vec	p;
+	float	bias;
+
+	bias = 1.00001;
+	c = ft_vectormulti(ft_vectoradd(box->bounds[0], box->bounds[1]), 0.5);
+	d = ft_vectormulti(ft_vectorsub(box->bounds[0], box->bounds[1]), 0.5);
+	d.x = fabs(d.x) * bias;
+	d.y = fabs(d.y) * bias;
+	d.z = fabs(d.z) * bias;
+	p = ft_vectorsub(h, c);
+	return (ft_normalize(ft_vector(p.x / d.x, p.y / d.y, p.z / d.z)));
+}
+
+t_vec	ft_parallelogram_normal(t_object *para)
+{
+	t_vec	n;
+
+	n = ft_crossproduct(ft_vectorsub(para->c, para->a), ft_vectorsub(para->d, para->a));
+	return (ft_normalize(n));	
+}
+
 void	ft_compute_normals(t_hit *hit, t_ray *ray)
 {
 	t_vec	x;
@@ -323,9 +581,11 @@ void	ft_compute_normals(t_hit *hit, t_ray *ray)
 	t_vec	mr;
 	t_vec	ba;
 	t_vec	ca;
+	// t_vec	ab;
+	// t_vec	cb;
 	float	m;
 	// float	maxm;
-	float	k;
+	// float	k;
 	int		ret;
 	
 	ret = 0;
@@ -350,10 +610,11 @@ void	ft_compute_normals(t_hit *hit, t_ray *ray)
 	}
 	else if (hit->object->type == CONE)
 	{
-		x = ft_vectorsub(ray->source, hit->object->pos); 
-		m = ft_dotproduct(ray->direction, ft_vectormulti(hit->object->axis, hit->t)) + ft_dotproduct(x, hit->object->axis);
-		k = tanf(deg_to_rad(hit->object->angle) / 2.0);
-		hit->n = ft_normalize(ft_vectorsub(ft_vectorsub(hit->p, hit->object->pos), ft_vectormulti(hit->object->axis, ((1.0 + (k * k)) * m))));
+		hit->n = ft_normal_cone(hit->object, hit->p);
+		// x = ft_vectorsub(ray->source, hit->object->pos); 
+		// m = ft_dotproduct(ray->direction, ft_vectormulti(hit->object->axis, hit->t)) + ft_dotproduct(x, hit->object->axis);
+		// k = tanf(deg_to_rad(hit->object->angle) / 2.0);
+		// hit->n = ft_normalize(ft_vectorsub(ft_vectorsub(hit->p, hit->object->pos), ft_vectormulti(hit->object->axis, ((1.0 + (k * k)) * m))));
 	}
 	else if (hit->object->type == ELLIPSOID)
 	{
@@ -372,6 +633,14 @@ void	ft_compute_normals(t_hit *hit, t_ray *ray)
 		ba = ft_vectorsub(hit->object->b, hit->object->a);
 		hit->n = ft_normalize(ft_crossproduct(ba, ca));
 	}
+	else if (hit->object->type == BOX)
+	{
+		hit->n = ft_box_normal(hit->object, hit->p);
+	}
+	// else if (hit->object->type == LTD_PLANE)
+	// {
+	// 	hit->n = ltd_pln_normal();
+	// }
 }
 
 t_vec	ft_light_computing(t_light *light, t_vec light_dir, t_hit *hit, t_ray *ray)
@@ -544,9 +813,9 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 					save = ray;
 				}
 		}
-		else if (p->type == PLANE)
+		else if (p->type == CYLINDER)
 		{
-			if (plane_intersect(p, &ray, &t))
+			if (cylinder_intersect(p, &ray, &t))
 				if (hit->t > t)
 				{
 					hit->t = t;
@@ -554,9 +823,9 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 					save = ray;
 				}
 		}
-		else if (p->type == CYLINDER)
+		else if (p->type == PLANE)
 		{
-			if (cylinder_intersect(p, &ray, &t))
+			if (plane_intersect(p, &ray, &t))
 				if (hit->t > t)
 				{
 					hit->t = t;
@@ -597,6 +866,36 @@ int		raycast(t_object *lst, t_ray *raw, t_hit *hit)
 		else if (p->type == TRIANGLE)
 		{
 			if (triangle_intersect(p, &ray, &t))
+				if (hit->t > t)
+				{
+					hit->t = t;
+					hit->object = p;
+					save = ray;
+				}
+		}
+		else if (p->type == BOX)
+		{
+			if (box_intersect(p, &ray, &t))
+				if (hit->t > t)
+				{
+					hit->t = t;
+					hit->object = p;
+					save = ray;
+				}
+		}
+		// else if (p->type == LTD_PLANE)
+		// {
+		// 	if (ltd_pln_intersect(p, &ray, &t))
+		// 		if (hit->t > t)
+		// 		{
+		// 			hit->t = t;
+		// 			hit->object = p;
+		// 			save = ray;
+		// 		}
+		// }
+		else if (p->type == PARALLELOGRAM)
+		{
+			if (parallelogram_intersect(p, &ray, &t))
 				if (hit->t > t)
 				{
 					hit->t = t;
@@ -673,6 +972,24 @@ int 	shadow_cast(t_object *lst, t_ray *ray, float *tmin)
 				if (t < *tmin)
 					return (1);
 		}
+		else if (p->type == BOX)
+		{
+			if (box_intersect(p, &ra, &t))
+				if (t < *tmin)
+					return (1);
+		}
+		// else if (p->type == LTD_PLANE)
+		// {
+		// 	if (ltd_pln_intersect(p, &ra, &t))
+		// 		if (t < *tmin)
+		// 			return (1);
+		// }
+		else if (p->type == PARALLELOGRAM)
+		{
+			if (parallelogram_intersect(p, &ra, &t))
+				if (t < *tmin)
+					return (1);
+		}
 		p = p->next;
 	}
 	return 0;
@@ -701,7 +1018,8 @@ void update(t_mx *mx)
 			hit.t = INFINITY;
 			if (raycast(mx->objects, &ray, &hit))
 			{
-				mx->rt[x + (WIN_H - 1 - y) * WIN_W] = ft_shade_object(&hit, mx->lights, mx->objects, &ray);// 0xFF00FF;
+				mx->rt[x + (WIN_H - 1 - y) * WIN_W] = ft_shade_object(&hit, mx->lights, mx->objects, &ray);
+				// mx->rt[x + (WIN_H - 1 - y) * WIN_W] = 0xff0000;
 			}
 		}
 	}
