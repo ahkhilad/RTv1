@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parse_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:12:21 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/29 17:38:33 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:29:16 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ int				ft_split_check(char *line)
 	char		**tab;
 	int			i;
 	static char	*elements[] = \
-	{"camera", "light", "sphere", "plane", "cone", "cylinder"};
+	{"camera", "light", "sphere", "plane", "cone", "cylinder", "box", "parallelogram", "torus"};
 
 	if (!ft_check_empty_lines(line))
 		return (0);

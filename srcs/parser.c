@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:36 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/30 18:40:26 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:27:39 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,15 @@ int			ft_token_handle(t_mx *v, char **token)
 			return (0);
 	if (token[0] && ft_strequ(token[0], "cylinder"))
 		if (!ft_parse_cylinder(v, token))
+			return (0);
+	if (token[0] && ft_strequ(token[0], "box"))
+		if (!ft_parse_box(v, token))
+			return (0);
+	if (token[0] && ft_strequ(token[0], "parallelogram"))
+		if (!ft_parse_parallelogram(v, token))
+			return (0);
+	if (token[0] && ft_strequ(token[0], "torus"))
+		if (!ft_parse_torus(v, token))
 			return (0);
 	if (token[0] && ft_strequ(token[0], "light"))
 		if (!ft_parse_light(v, token))

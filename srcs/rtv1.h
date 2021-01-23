@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   rtv1.h                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2019/11/29 00:31:07 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/29 17:27:40 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:28:04 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,58 @@
 # include <time.h>
 # include "../libft/libft.h"
 # include "../linearlib/linear_alg.h"
+
+typedef struct	s_cubic
+{
+	double	a;
+	double	b;
+	double	c;
+	double	d;
+	double	sq_a;
+	double	p;
+	double	q;
+	double	cb_p;
+}				t_cubic;
+
+typedef struct	s_quartic
+{
+	double	a;
+	double	b;
+	double	c;
+	double	d;
+	double	z;
+	double	u;
+	double	v;
+	double	sub;
+	double	sq_a;
+	double	p;
+	double	q;
+	double	r;
+}				t_quartic;
+
+typedef struct	s_parallelogram
+{
+	t_vec	e01;
+	t_vec	e03;
+	t_vec	e23;
+	t_vec	e21;
+	t_vec	p;
+	t_vec	p2;
+	t_vec	t;
+	t_vec	t2;
+	t_vec	q;
+	t_vec	q2;
+	t_vec	n;
+	float	det;
+	float	det2;
+	float	invdet;
+	float	invdet2;
+	float	t1;
+	float	a;
+	float	b;
+	float	a2;
+	float	b2;
+}				t_parallelogram;
 
 typedef struct			s_intersect
 {
@@ -70,7 +122,10 @@ typedef enum			e_type
 	SPHERE = 10,
 	PLANE,
 	CONE,
-	CYLINDER
+	CYLINDER,
+	BOX,
+	PARALLELOGRAM,
+	TORUS
 }						t_type;
 
 typedef struct			s_object
@@ -80,7 +135,16 @@ typedef struct			s_object
 	t_vec				trans;
 	t_vec				rot;
 	t_vec				color;
+	t_vec				a;
+	t_vec				b;
+	t_vec				c;
+	t_vec				d;
+	t_vec				bounds[2];
+	float               height;//Caped cylinder cone
 	float				radius;
+	float				radius1;
+	float				radius2;
+	float				distance;
 	float				angle;
 	t_vec				normal;
 	t_vec				axis;
@@ -159,10 +223,15 @@ float					deg_to_rad(float angle);
 t_vec					x_rotation(t_vec v, float theta);
 t_vec					y_rotation(t_vec v, float theta);
 t_vec					z_rotation(t_vec v, float theta);
+
 int						ft_parse_sphere(t_mx *v, char **token);
 int						ft_parse_plane(t_mx *v, char **token);
 int						ft_parse_cone(t_mx *v, char **token);
 int						ft_parse_cylinder(t_mx *v, char **token);
+int						ft_parse_box(t_mx *v, char **token);
+int						ft_parse_parallelogram(t_mx *v, char **token);
+int						ft_parse_torus(t_mx *v, char **token);
+
 int						ft_parse_light(t_mx *v, char **token);
 int						ft_parse_camera(t_mx *v, char **token);
 t_cam					ft_camera_create(t_vec pos, t_vec at, t_vec vup, \
@@ -175,6 +244,10 @@ int						plane_intersect(t_object *plane, \
 int						cylinder_intersect(t_object *cylinder, \
 						t_ray *ray, float *tmin);
 int						cone_intersect(t_object *cone, t_ray *ray, float *tmin);
+int						box_intersect(t_object *box, t_ray *ray, float *tmin);
+int						parallelogram_intersect(t_object *para, t_ray *ray,float *tmin);
+int						torus_intersect(t_object *torus, t_ray *ray, float *tmin);
+
 int						raycast(t_object *lst, t_ray *raw, t_hit *hit);
 t_vec					ft_rotate_object(t_vec to_rot, t_vec rot, int invert);
 t_vec					ft_translate_object(t_vec to_trans, \
@@ -186,6 +259,9 @@ void					tokenfill_sphere(char **token, t_object *object);
 void					tokenfill_plane(char **token, t_object *object);
 void					tokenfill_cone(char **token, t_object *object);
 void					tokenfill_cylinder(char **token, t_object *object);
+void					tokenfill_box(char **token, t_object *object);
+void					tokenfill_parallelogram(char **token, t_object *object);
+void					tokenfill_torus(char **token, t_object *object);
 
 int						ft_split_check(char *line);
 int						ft_check_vectors(char *str);

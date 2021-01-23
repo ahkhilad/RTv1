@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   main.c                                             :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/01/04 21:42:11 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/29 17:22:36 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:48:09 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -54,7 +54,7 @@ int		ft_shade_object(t_hit *hit, t_light *lights, t_object *lst, t_ray *ray)
 		light_dir = ft_normalize(ft_vectorsub(light->pos, hit->p));
 		shadow_ray.direction = light_dir;
 		t = ft_magnitude(ft_vectorsub(light->pos, hit->p));
-		if (!shadow_cast(lst, &shadow_ray, &t))
+		if (!shadow_cast(lst, &shadow_ray, &t)){}
 			color = ft_vectoradd(color, ft_lgt_computing(light, light_dir,\
 		hit, ray));
 		light = light->next;
@@ -79,8 +79,8 @@ void	update(t_mx *mx)
 			hit.t = INFINITY;
 			if (raycast(mx->objects, &ray, &hit))
 			{
-				mx->rt[(WIN_H - 1 - y) * WIN_W + x] =\
-					ft_shade_object(&hit, mx->lights, mx->objects, &ray);
+				mx->rt[(WIN_H - 1 - y) * WIN_W + x] = ft_shade_object(&hit, mx->lights, mx->objects, &ray);
+				// mx->rt[(WIN_H - 1 - y) * WIN_W + x] = 0xff0000;
 			}
 			x++;
 		}

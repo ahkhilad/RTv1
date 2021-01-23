@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   mlx.c                                              :+:      :+:    :+:   */
+/*   mlx_stuff.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 17:41:49 by babdelka          #+#    #+#             */
-/*   Updated: 2020/12/29 11:17:47 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/10 21:02:02 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void		setup(t_mx *v)
 	v->wptr = mlx_new_window(v->mptr, WIN_W, WIN_H, "RTv1");
 	v->iptr = mlx_new_image(v->mptr, WIN_W, WIN_H);
 	v->rt = (int *)mlx_get_data_addr(v->iptr, &v->bpp, &v->size, &v->end);
-	mlx_hook(v->wptr, 2, 0, key_press, v);
+	mlx_hook(v->wptr, 2, (1L << 0), key_press, v);
 	mlx_hook(v->wptr, 17, 0, red_button, v);
 }
 

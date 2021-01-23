@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   raycast.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/12/26 15:14:20 by babdelka          #+#    #+#             */
-/*   Updated: 2020/12/29 10:25:14 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/23 23:27:16 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,6 +28,12 @@ t_ray			raycastloop(t_object *p, t_hit *hit, t_ray *raw, float t)
 			cylinder_intersect(p, &ray, &t);
 		else if (p->type == CONE)
 			cone_intersect(p, &ray, &t);
+		else if (p->type == BOX)
+			box_intersect(p, &ray, &t);
+		else if (p->type == PARALLELOGRAM)
+			parallelogram_intersect(p, &ray, &t);
+		else if (p->type == TORUS)
+			torus_intersect(p, &ray, &t);
 		if (hit->t > t)
 		{
 			hit->t = t;
@@ -80,6 +86,12 @@ int				shadow_cast(t_object *lst, t_ray *ray, float *tmin)
 			cylinder_intersect(p, &ra, &t);
 		else if (p->type == CONE)
 			cone_intersect(p, &ra, &t);
+		else if (p->type == BOX)
+			box_intersect(p, &ra, &t);
+		else if (p->type == PARALLELOGRAM)
+			parallelogram_intersect(p, &ra, &t);
+		else if (p->type == TORUS)
+			torus_intersect(p, &ra, &t);
 		if (t < *tmin)
 			return (1);
 		p = p->next;

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   launch.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: babdelka <babdelka@student.42.fr>          +#+  +:+       +#+        */
+/*   By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2020/10/14 18:07:49 by ahkhilad          #+#    #+#             */
-/*   Updated: 2020/12/29 11:16:21 by babdelka         ###   ########.fr       */
+/*   Updated: 2021/01/10 21:01:35 by ahkhilad         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,8 @@ int			key_press(int keycode, void *p)
 	t_mx	*v;
 
 	v = (t_mx *)p;
-	if (keycode == 53)
+	// if (keycode == 53)
+	if (keycode == 65307)
 	{
 		ft_destroy(v);
 		exit(0);

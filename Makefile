@@ -6,11 +6,11 @@
 #    By: ahkhilad <ahkhilad@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2019/08/06 14:38:16 by ahkhilad          #+#    #+#              #
-#    Updated: 2020/12/31 09:30:57 by ahkhilad         ###   ########.fr        #
+#    Updated: 2021/01/10 23:04:51 by ahkhilad         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
-NAME = RTv1
+NAME = RT
 
 LFT = libft/libft.a
 
@@ -30,7 +30,8 @@ CC = gcc
 
 CFLAGS = -Wall -Wextra -Werror
 
-MLXFLAGS = -lmlx -framework OpenGL -framework AppKit 
+# MLXFLAGS = -lmlx -framework OpenGL -framework AppKit
+MLXFLAGS = -lmlx -lXext -lX11 -lm -lbsd
 
 OBJ = $(SRCS:.c=.o)
 
@@ -38,7 +39,7 @@ all: $(NAME)
 
 $(OBJ): $(SRCS) $(INC)
 	@echo "\033[2;33m"
-	gcc $(CFLAGS) -c $(SRCS) 
+	$(CC) $(CFLAGS) -c $(SRCS) 
 	mv *.o ./srcs/
 	@echo "\033[0m"
 
